@@ -36,33 +36,26 @@ fn part2<'a>(input: impl Iterator<Item = &'a str>) -> u32 {
     //   Anywhere we're using [] to index, we could runtime panic.
     //   The `as u8` below _could_ panic, but won't because it's a static array and we know there
     //   are never more than 10 indexes. And `10` can fit in a u8.
+    fn find_digit(line: &[u8]) -> impl Fn(usize) -> Option<u8> + '_ {
+        |i: usize| {
+            if line[i].is_ascii_digit() {
+                return Some(line[i] - b'0');
+            }
+
+            #[allow(clippy::cast_possible_truncation)]
+            NUMS.iter()
+                .enumerate()
+                .find_map(|(ni, num)| line[i..].starts_with(num).then_some(ni as u8))
+        }
+    }
+
     input.fold(0, |sum, line| {
         let line = line.as_bytes();
-        let first = (0..line.len())
-            .find_map(|i| {
-                if line[i].is_ascii_digit() {
-                    return Some(line[i] - b'0');
-                }
-
-                #[allow(clippy::cast_possible_truncation)]
-                NUMS.iter()
-                    .enumerate()
-                    .find_map(|(ni, num)| line[i..].starts_with(num).then_some(ni as u8))
-            })
-            .unwrap();
+        let first = (0..line.len()).find_map(find_digit(line)).unwrap();
 
         let last = (0..line.len())
             .rev()
-            .find_map(|i| {
-                if line[i].is_ascii_digit() {
-                    return Some(line[i] - b'0');
-                }
-
-                #[allow(clippy::cast_possible_truncation)]
-                NUMS.iter()
-                    .enumerate()
-                    .find_map(|(ni, num)| line[i..].starts_with(num).then_some(ni as u8))
-            })
+            .find_map(find_digit(line))
             .unwrap_or(first);
 
         sum + u32::from((first * 10) + last)
