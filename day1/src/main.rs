@@ -1,5 +1,3 @@
-#![deny(clippy::all, clippy::pedantic, rust_2018_idioms)]
-
 const INPUT: &str = include_str!("../../input/day1.txt");
 
 pub fn main() {

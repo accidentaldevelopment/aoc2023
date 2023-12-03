@@ -1,8 +1,6 @@
 set dotenv-load
 
 day_template := '''
-#![deny(clippy::all, clippy::pedantic, rust_2018_idioms)]
-
 // TODO: Set correct day
 const INPUT: &str = include_str!("../../input/day{{day}}.txt");
 
